@@ -46,6 +46,15 @@ async def trim_video_with_progress(input_file, start_time, end_time, output_file
                 await message.edit_text(f"Trimming the video, please wait... {progress:.2f}%")
     return process.poll()
 
+# Function to create a thumbnail
+def create_thumbnail(input_file, thumbnail_file, time="00:00:30"):
+    command = [
+        'ffmpeg', '-y', '-i', input_file,
+        '-ss', time, '-vframes', '1',
+        thumbnail_file
+    ]
+    subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
 @app.on_message(filters.command(["trim"]) & filters.reply)
 async def trim(client: Client, message: Message):
     if not message.reply_to_message.video:
@@ -62,6 +71,7 @@ async def trim(client: Client, message: Message):
     video = message.reply_to_message.video
     input_file = await message.reply_to_message.download()
     output_file = f"trimmed_{video.file_id}.mp4"
+    thumbnail_file = f"thumbnail_{video.file_id}.jpg"
 
     # Notify the user about the start of the process
     progress_message = await message.reply_text("Trimming the video, please wait... 0%")
@@ -69,13 +79,17 @@ async def trim(client: Client, message: Message):
     # Trim the video with progress
     await trim_video_with_progress(input_file, start_time, end_time, output_file, progress_message)
 
-    # Send the trimmed video back to the user
-    await message.reply_video(video=output_file)
+    # Create a thumbnail from the video at the 30-second mark
+    create_thumbnail(input_file, thumbnail_file)
+
+    # Send the trimmed video back to the user as a stream with a thumbnail
+    await message.reply_video(video=output_file, thumb=thumbnail_file, supports_streaming=True)
 
     # Delete the progress message and temporary files
     await progress_message.delete()
     os.remove(input_file)
     os.remove(output_file)
+    os.remove(thumbnail_file)
 
 # Run the bot
 app.run()
