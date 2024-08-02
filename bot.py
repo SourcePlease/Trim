@@ -55,7 +55,7 @@ def create_thumbnail(input_file, thumbnail_file, time="00:00:30"):
     ]
     subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-@app.on_message(filters.command(["trim"]) & filters.reply & (filters.video | filters.document | filters.media))
+@app.on_message(filters.command(["trim"]) & (filters.video | filters.document | filters.media))
 async def trim(client: Client, message: Message):
     if not (message.reply_to_message.video or message.reply_to_message.document or message.reply_to_message.media):
         await message.reply_text("Please reply to a video, document, or media message with /trim command.")
