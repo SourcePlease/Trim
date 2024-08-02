@@ -5,7 +5,7 @@ import subprocess
 import re
 
 # Initialize the Pyrogram Client
-app = Client("my_bot", api_id=YOUR_API_ID, api_hash=YOUR_API_HASH, bot_token=YOUR_BOT_TOKEN)
+app = Client("my_bot", api_id=15830858, api_hash="2c015c994c57b312708fecc8a2a0f1a6", bot_token="6006802393:AAFeAWs0NhPDOc4_Bnd9RMEYjJniN05GELw")
 
 def get_duration(filename):
     """Get the duration of the video in seconds."""
