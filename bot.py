@@ -55,10 +55,10 @@ def create_thumbnail(input_file, thumbnail_file, time="00:00:30"):
     ]
     subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-@app.on_message(filters.command(["trim"]) & filters.reply)
+@app.on_message(filters.command(["trim"]) & filters.reply & (filters.video | filters.document | filters.media))
 async def trim(client: Client, message: Message):
-    if not message.reply_to_message.video:
-        await message.reply_text("Please reply to a video message with /trim command.")
+    if not (message.reply_to_message.video or message.reply_to_message.document or message.reply_to_message.media):
+        await message.reply_text("Please reply to a video, document, or media message with /trim command.")
         return
 
     try:
@@ -68,7 +68,13 @@ async def trim(client: Client, message: Message):
         await message.reply_text("Usage: /trim <start_time> <end_time>\nExample: /trim 00:23:00 00:45:00")
         return
 
-    video = message.reply_to_message.video
+    if message.reply_to_message.video:
+        video = message.reply_to_message.video
+    elif message.reply_to_message.document:
+        video = message.reply_to_message.document
+    else:
+        video = message.reply_to_message.media
+
     input_file = await message.reply_to_message.download()
     output_file = f"trimmed_{video.file_id}.mp4"
     thumbnail_file = f"thumbnail_{video.file_id}.jpg"
