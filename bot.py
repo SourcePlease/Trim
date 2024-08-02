@@ -9,7 +9,7 @@ import re
 logging.basicConfig(level=logging.INFO)
 
 # Initialize the Pyrogram Client
-app = Client("my_bot", api_id=15830858, api_hash="2c015c994c57b312708fecc8a2a0f1a6", bot_token="6006802393:AAFeAWs0NhPDOc4_Bnd9RMEYjJniN05GELw:)
+app = Client("my_bot", api_id=15830858, api_hash="2c015c994c57b312708fecc8a2a0f1a6", bot_token="6006802393:AAFeAWs0NhPDOc4_Bnd9RMEYjJniN05GELw")
 
 def get_duration(filename):
     """Get the duration of the video in seconds."""
@@ -63,7 +63,7 @@ def create_thumbnail(input_file, thumbnail_file, time="00:00:30"):
     ]
     subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-@app.on_message(filters.command(["trim"]) & filters.reply & (filters.video | filters.document | filters.media))
+@app.on_message(filters.command(["trim"]) & (filters.video | filters.document | filters.media))
 async def trim(client: Client, message: Message):
     logging.info("Received trim command.")
     if not (message.reply_to_message.video or message.reply_to_message.document or message.reply_to_message.media):
